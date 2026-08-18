@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>해찬가 401호 · 온비엔 트래커</title>
+<style>
+  :root{
+    --ink:#292521;--ink-soft:#6B6355;--paper:#FAF7F2;--card:#FFFFFF;
+    --line:#E7E1D6;--gold:#C2A163;--gold-deep:#9A7B3F;--gold-pale:#F3EAD8;
+    --green:#5C8A5A;--green-soft:#EAF1E9;
+    --amber:#C8912E;--amber-soft:#FBF2DE;
+    --gray:#9B8F7D;--blue:#3E6B8F;--blue-soft:#E9F0F5;--red:#B5654A;
+    --cover:#2E2A25;--cover2:#3A342C;
+    --shadow:0 1px 2px rgba(42,39,35,.05),0 8px 24px rgba(42,39,35,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;padding:0 0 70px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:560px;margin:0 auto;padding:0 16px}
+  .cover{margin-top:16px;border-radius:22px;overflow:hidden;position:relative;background:linear-gradient(150deg,var(--cover) 0%,var(--cover2) 100%);color:#F5EFE4;padding:24px 22px 20px;box-shadow:0 10px 30px rgba(42,39,35,.18)}
+  .cover::after{content:"";position:absolute;top:0;right:0;width:140px;height:140px;background:radial-gradient(circle at top right,rgba(194,161,99,.22),transparent 70%)}
+  .cov-eyebrow{font-size:11px;letter-spacing:.24em;color:var(--gold);font-weight:700;text-transform:uppercase}
+  .cov-title{font-size:21px;font-weight:800;letter-spacing:-.02em;margin-top:5px}
+  .cov-addr{font-size:12px;color:#B9AE9C;margin-top:2px}
+  .cov-row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:16px}
+  .cov-dday{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--gold);line-height:1}
+  .cov-dday small{font-size:13px;color:#B9AE9C;font-weight:600;margin-left:4px}
+  .cov-date{font-size:12px;color:#B9AE9C;text-align:right}
+  .cov-date b{display:block;font-size:13px;color:#F5EFE4;font-weight:700}
+  .cov-prog{margin-top:13px}
+  .cov-todo{margin-top:15px;display:flex;flex-direction:column;gap:6px}
+  .ct-item{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border-radius:10px;padding:9px 11px;cursor:pointer}
+  .ct-item.now{background:rgba(194,161,99,.18);border:1px solid rgba(194,161,99,.4)}
+  .ct-tag{font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;background:rgba(255,255,255,.15);color:#B9AE9C;flex-shrink:0}
+  .ct-item.now .ct-tag{background:var(--gold);color:#2E2A25}
+  .ct-name{font-size:13px;font-weight:600;color:#F5EFE4;flex:1;line-height:1.3}
+  .ct-when{font-size:10.5px;font-weight:700;color:var(--gold);flex-shrink:0}
+  .ct-done{text-align:center;padding:12px;font-size:14px;font-weight:700;color:var(--gold)}
+  .ct-item.prog .ct-tag{background:#F0B429;color:#2E2A25}
+  .cov-track{height:7px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+  .cov-fill{height:100%;background:linear-gradient(90deg,var(--gold),#E4C98A);border-radius:99px;transition:width .5s;width:0}
+  .cov-meta{display:flex;justify-content:space-between;margin-top:7px;font-size:11.5px;color:#B9AE9C}
+  .cov-meta b{color:#F5EFE4}
+  .chips{display:flex;gap:6px;margin-top:14px}
+  .chip{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:8px 4px;text-align:center}
+  .chip .cd{font-size:10px;color:#B9AE9C}
+  .chip .cv{font-size:12.5px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;margin-top:1px}
+  .chip .cn{font-size:9.5px;color:#DDD3C0;margin-top:1px}
+  .chip.past .cv{color:#7d746a}
+  .chip.hot{background:rgba(194,161,99,.18);border-color:rgba(194,161,99,.4)}
+  .tabs{display:flex;gap:6px;margin-top:14px;position:sticky;top:8px;z-index:20}
+  .tab{flex:1;padding:11px 4px;border:1px solid var(--line);background:var(--card);border-radius:12px;font-size:12.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;font-family:inherit;transition:all .18s;box-shadow:var(--shadow)}
+  .tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .view{display:none}.view.on{display:block}
+  .sec-head{display:flex;align-items:baseline;gap:8px;margin:24px 2px 11px}
+  .sec-title{font-size:15px;font-weight:800}
+  .sec-sub{font-size:11.5px;color:var(--ink-soft)}
+  .next-card{background:linear-gradient(135deg,#FDF9F0,#F6EDDC);border:1.5px solid #E5D3AC;border-radius:18px;padding:18px;margin-top:18px;box-shadow:var(--shadow);cursor:pointer}
+  .next-lab{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--gold-deep);text-transform:uppercase}
+  .next-name{font-size:17px;font-weight:800;margin-top:6px}
+  .next-when{font-size:12.5px;color:var(--gold-deep);font-weight:700;margin-top:3px}
+  .next-phase{font-size:11.5px;color:var(--ink-soft);margin-top:6px}
+  .next-go{display:inline-block;margin-top:11px;font-size:12.5px;font-weight:700;color:#fff;background:var(--ink);padding:8px 16px;border-radius:9px}
+  .next-done{background:var(--green-soft);border-color:#CBDEC9}
+  .next-done .next-name{color:var(--green)}
+  .phase{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:11px;overflow:hidden}
+  .phase-head{display:flex;align-items:center;gap:11px;padding:14px 15px;cursor:pointer;user-select:none}
+  .phase-dot{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-size:12.5px;font-weight:800;background:var(--line);color:var(--ink-soft)}
+  .phase.done .phase-dot{background:var(--green);color:#fff}
+  .phase.active .phase-dot{background:var(--gold);color:#fff}
+  .phase-titles{flex:1;min-width:0}
+  .phase-name{font-size:14.5px;font-weight:700}
+  .phase-when{font-size:11.5px;color:var(--ink-soft);margin-top:1px}
+  .phase-count{font-size:11.5px;font-weight:700;color:var(--gold-deep);white-space:nowrap}
+  .phase-chev{width:15px;height:15px;flex-shrink:0;transition:transform .25s;color:var(--ink-soft)}
+  .phase.open .phase-chev{transform:rotate(180deg)}
+  .phase-body{display:none;border-top:1px solid var(--line);background:#FDFBF8}
+  .phase.open .phase-body{display:block}
+  .task{border-bottom:1px solid var(--line)}.task:last-child{border-bottom:none}
+  .task-row{display:flex;align-items:flex-start;gap:11px;padding:12px 15px;cursor:pointer}
+  .check{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;margin-top:1px;display:grid;place-items:center;transition:all .18s;background:#fff;position:relative}
+  .check svg{width:13px;height:13px;stroke:#fff;stroke-width:3.2;fill:none;opacity:0}
+  .task.done .check{background:var(--green);border-color:var(--green)}
+  .task.done .check svg{opacity:1}
+  .task-main{flex:1;min-width:0}
+  .task-name{font-size:14px;font-weight:600}
+  .task.done .task-name{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--line)}
+  .task-when{font-size:11px;color:var(--gold-deep);font-weight:700;margin-top:2px}
+  .task-stamp{font-size:10.5px;color:var(--green);font-weight:600;margin-top:3px;display:none}
+  .task.done .task-stamp{display:block}
+  .task-expand{font-size:10.5px;color:var(--ink-soft);margin-top:4px;display:inline-block;font-weight:600}
+  .task-detail{display:none;padding:0 15px 15px 48px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+  .task.expanded .task-detail{display:block}
+  .task-detail h5{font-size:12px;color:var(--ink);font-weight:700;margin:11px 0 4px}
+  .task-detail h5:first-child{margin-top:0}
+  .task-detail ul{list-style:none}
+  .task-detail li{position:relative;padding-left:14px;margin-bottom:3px}
+  .task-detail li::before{content:"·";position:absolute;left:2px;color:var(--gold);font-weight:800}
+  .task-detail .note{background:var(--blue-soft);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:8px 11px;margin:9px 0 2px;font-size:12px;color:var(--ink)}
+  .task-detail .warn{background:#FBEEE9;border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:8px 11px;margin:9px 0 2px;font-size:12px;color:var(--ink)}
+  .task-detail a{color:var(--blue);font-weight:600;text-decoration:none;border-bottom:1px solid var(--blue-soft)}
+  .qbox{background:#FFF;border:1px dashed var(--gold);border-radius:9px;padding:9px 11px;margin:9px 0 2px;font-size:12px;color:var(--ink);line-height:1.65}
+  .qbox b{color:var(--gold-deep)}
+  .mission{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:11px;padding:15px 16px;position:relative;cursor:pointer}
+  .mission.done{background:#FBFDF9;border-color:#CBDEC9}
+  .m-top{display:flex;align-items:center;gap:10px}
+  .m-num{width:30px;height:30px;border-radius:50%;background:var(--gold-pale);color:var(--gold-deep);font-weight:800;font-size:13.5px;display:grid;place-items:center;flex-shrink:0}
+  .mission.done .m-num{background:var(--green);color:#fff}
+  .m-place{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--blue);text-transform:uppercase}
+  .m-name{font-size:15px;font-weight:800;margin-top:1px}
+  .mission.done .m-name{color:var(--green)}
+  .m-stamp{position:absolute;top:13px;right:14px;font-size:10.5px;color:var(--green);font-weight:700;text-align:right}
+  .m-body{margin-top:9px;font-size:12.5px;color:var(--ink-soft);line-height:1.7;display:none}
+  .mission.expanded .m-body{display:block}
+  .m-body ul{list-style:none}
+  .m-body li{position:relative;padding-left:14px;margin-bottom:3px}
+  .m-body li::before{content:"·";position:absolute;left:2px;color:var(--gold);font-weight:800}
+  .m-body .note{background:var(--blue-soft);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:8px 11px;margin:9px 0 2px;font-size:12px;color:var(--ink)}
+  .m-body .warn{background:#FBEEE9;border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:8px 11px;margin:9px 0 2px;font-size:12px;color:var(--ink)}
+  .m-hint{font-size:10.5px;color:var(--ink-soft);margin-top:7px;font-weight:600}
+  .mini-card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:15px;margin-bottom:11px}
+  .mini-title{font-size:13px;font-weight:800;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+  .mline{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+  .mline:last-child{border-bottom:none}
+  .mline .ml{color:var(--ink-soft)}
+  .mline .mv{font-weight:700;font-variant-numeric:tabular-nums}
+  .mline.tot{border-top:1.5px solid var(--line);border-bottom:none;margin-top:4px;padding-top:9px}
+  .mline.tot .ml{color:var(--ink);font-weight:800}
+  .mline.tot .mv{color:var(--gold-deep);font-weight:800}
+  .badge{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+  .badge.sure{background:var(--green)}.badge.amt{background:var(--amber)}.badge.maybe{background:var(--gray)}
+  .exp{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .exp:last-child{border-bottom:none}
+  .exp .en{font-weight:600}
+  .exp .enote{font-size:10.5px;color:var(--ink-soft);margin-top:1px}
+  .exp .ea{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .exp .ea.q{color:var(--gray)}
+  .note-box{background:var(--amber-soft);border-left:3px solid var(--amber);border-radius:0 10px 10px 0;padding:10px 12px;margin-top:11px;font-size:12px;line-height:1.6}
+  .note-blue{background:var(--blue-soft);border-color:var(--blue)}
+  .note-green{background:var(--green-soft);border-color:var(--green)}
+  .note-amber{background:var(--amber-soft);border-color:var(--amber)}
+  .loan-fold{margin-top:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .loan-fold summary{padding:11px 13px;font-size:13px;font-weight:700;color:var(--gold);cursor:pointer;background:#FBF7EF;list-style:none}
+  .loan-fold summary::-webkit-details-marker{display:none}
+  .loan-fold[open] summary{border-bottom:1px solid var(--line)}
+  .loan-note{font-size:11.5px;color:var(--ink-soft);padding:9px 13px;line-height:1.5}
+  .loan-tbl{width:100%;border-collapse:collapse;font-size:12px}
+  .loan-tbl th{background:#F5EFE4;padding:7px 10px;text-align:right;font-weight:700;color:var(--ink-soft);font-size:11px}
+  .loan-tbl th:first-child{text-align:left}
+  .loan-tbl td{padding:7px 10px;text-align:right;border-top:1px solid #F0EBE2;font-variant-numeric:tabular-nums}
+  .loan-tbl td:first-child{text-align:left;font-weight:600}
+  .loan-tbl tr.hl{background:#FDF9EC}
+  .loan-tbl tr.hl td{color:var(--ink);font-weight:700}
+  .sheet-links{display:flex;gap:8px;margin:14px 0 4px;flex-wrap:wrap}
+  .sheet-btn{flex:1;min-width:140px;text-align:center;background:#fff;border:1.5px solid var(--gold);color:var(--gold-deep);border-radius:10px;padding:11px 10px;font-size:12.5px;font-weight:700;text-decoration:none;transition:.15s}
+  .sheet-btn:active{background:var(--gold);color:#fff}
+  .pay-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 0 3px}
+  .pay-amt{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+  .pay-deadline{text-align:right;font-size:11px;color:var(--red);font-weight:700;padding-bottom:8px;border-bottom:1px dashed var(--line)}
+  .scn{width:100%;border-collapse:collapse;font-size:12.5px;margin:2px 0 4px}
+  .scn th{background:var(--gold);color:#fff;padding:7px 4px;font-weight:700;font-size:11.5px}
+  .scn td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .scn tr:last-child td{border-bottom:none}
+  .scn td:first-child{font-weight:700;color:var(--gold-deep)}
+  /* 완료된 지난 단계 흐릿하게 */
+  .phase.past{opacity:.5}
+  .phase.past .phase-head{filter:grayscale(.3)}
+  .phase.active{box-shadow:0 2px 14px rgba(194,161,99,.18)}
+  /* 완료 단계 묶음 */
+  .past-group{margin-bottom:14px}
+  .past-bar{background:var(--gold-pale);border-radius:11px;padding:11px 14px;font-size:12.5px;font-weight:700;color:var(--gold-deep);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+  .past-chev{font-size:11px;opacity:.8}
+  .past-inner{display:none;padding-top:10px}
+  .past-group.open .past-inner{display:block}
+  /* 완료된 개별 일정 흐릿 */
+  .task.done{opacity:.5}
+  /* 진행중 상태 */
+  .task.proging{background:#FFFBF0}
+  .check.prog{background:#F0B429;border-color:#F0B429}
+  .check.prog svg{opacity:0}
+  .check.prog::after{content:"🔄";font-size:12px;position:absolute}
+  .pbadge{display:inline-block;font-size:10.5px;font-weight:800;color:#B8860B;background:#FDF3D7;border:1px solid #F0B429;padding:2px 8px;border-radius:20px;margin-left:6px;cursor:pointer}
+  .pmemo{font-size:12px;color:#8A6D1F;background:#FDF9EC;border-left:3px solid #F0B429;border-radius:0 8px 8px 0;padding:7px 10px;margin-top:7px;cursor:pointer;line-height:1.5}
+  /* 영수증 배지 */
+  .rbadge{display:inline-block;font-size:10.5px;font-weight:700;color:#9A7B3F;background:#F3EAD8;border:1px solid #E5D3AE;padding:2px 8px;border-radius:20px;margin-top:6px;cursor:pointer}
+  .rbadge.got{color:#2E6B4F;background:#E3F1E8;border-color:#B9DEC8}
+  /* 도어락 체크 칩 */
+  .dcheck{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
+  .dcheck span{display:inline-block;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;padding:6px 10px;background:#fff;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink)}
+  .dcheck span.tried{background:#F0EBE2;color:var(--ink-soft);border-color:var(--line);text-decoration:line-through;opacity:.6}
+  /* 단계 알림 박스 */
+  .phase-alert{background:#FFF6E0;border-left:3px solid var(--gold);border-radius:0 9px 9px 0;padding:9px 11px;margin:2px 4px 11px;font-size:12px;line-height:1.6;color:var(--ink)}
+  /* 주의/중요 배지 */
+  .fbadge{display:inline-block;margin-right:5px;font-size:12.5px;vertical-align:middle}
+  /* 드래그 */
+  .task{position:relative;touch-action:pan-y}
+  .task-grip{position:absolute;top:12px;right:10px;color:var(--line);font-size:13px;letter-spacing:-2px;pointer-events:none}
+  .task.dragging{opacity:.35}
+  .task.ghost{position:fixed;z-index:9999;pointer-events:none;box-shadow:0 12px 30px rgba(0,0,0,.22);margin:0;transform:rotate(1.2deg);background:#fff;border:1px solid var(--gold);border-radius:11px}
+  .phase.drop{outline:2px dashed var(--gold);outline-offset:2px}
+  .task.over-top{box-shadow:inset 0 3px 0 var(--gold)}
+  .task.over-bot{box-shadow:inset 0 -3px 0 var(--gold)}
+  /* 연락처 토글 버튼 */
+  .contact-toggle{width:100%;background:var(--gold-pale);border:none;border-radius:12px;padding:13px;font-size:13.5px;font-weight:700;color:var(--gold-deep);cursor:pointer;font-family:inherit;margin-top:8px}
+  .legend{display:flex;gap:13px;justify-content:center;margin:12px 0 9px}
+  .leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-soft)}
+  .flow-item{display:flex;justify-content:space-between;padding:8px 12px;background:#FDFBF8;border:1px solid var(--line);border-radius:9px;margin-bottom:5px;font-size:13px}
+  .flow-item .amt{font-weight:700;font-variant-numeric:tabular-nums}
+  .flow-arrow{text-align:center;color:var(--gold);font-size:15px;margin:7px 0;line-height:1}
+  .flow-total{display:flex;justify-content:space-between;padding:10px 12px;background:linear-gradient(135deg,#FBF6EC,#F6EEDD);border:1px solid #EBDFC5;border-radius:10px;font-weight:800;margin-top:5px;font-size:13.5px}
+  .flow-total .amt{color:var(--gold-deep);font-variant-numeric:tabular-nums}
+  .flow-lab{font-size:10.5px;font-weight:700;color:var(--ink-soft);letter-spacing:.05em;margin-bottom:6px}
+  .flow-sub{font-size:10.5px;color:var(--ink-soft);text-align:center;margin-top:8px}
+  .loan-card{background:linear-gradient(150deg,#2E2A25,#3A342C);color:#F5EFE4;border-radius:16px;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .loan-card .lt{font-size:11px;letter-spacing:.16em;color:var(--gold);font-weight:700;text-transform:uppercase}
+  .loan-card .ln{font-size:16px;font-weight:800;margin-top:4px}
+  .lrow{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .lrow:last-child{border-bottom:none}
+  .lrow .ll{color:#B9AE9C}
+  .lrow .lv{font-weight:700;font-variant-numeric:tabular-nums}
+  .lrow .lv.hi{color:var(--gold)}
+  .log-form{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
+  .lf-row{display:flex;gap:8px;margin-bottom:8px}
+  .lf-row input[type=text]{flex:1}
+  .log-form input{border:1px solid var(--line);border-radius:9px;padding:10px 11px;font-size:14px;font-family:inherit;background:#FDFBF8;color:var(--ink);min-width:0}
+  .log-form input:focus{outline:none;border-color:var(--gold);background:#fff}
+  .lf-amt{width:110px;text-align:right;font-variant-numeric:tabular-nums}
+  .lf-date{width:130px}
+  .lf-receipt{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-soft);padding:4px 0;user-select:none;cursor:pointer}
+  .lf-receipt input{width:17px;height:17px;accent-color:var(--green)}
+  .lf-add{width:100%;padding:12px;background:var(--ink);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+  .preset{font-size:11.5px;font-weight:700;color:var(--gold-deep);background:var(--gold-pale);border:1px solid #E5D3AC;border-radius:99px;padding:5px 11px;cursor:pointer;font-family:inherit}
+  .log-sum{background:linear-gradient(135deg,#FBF6EC,#F6EEDD);border:1px solid #EBDFC5;border-radius:14px;padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+  .log-sum .ls-l{font-size:12px;color:var(--gold-deep);font-weight:700}
+  .log-sum .ls-v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+  .log-sum .ls-warn{font-size:11px;color:var(--red);font-weight:700;margin-top:2px}
+  .log-sum .ls-ok{font-size:11px;color:var(--green);font-weight:700;margin-top:2px}
+  .log-item{background:var(--card);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:11px}
+  .li-main{flex:1;min-width:0}
+  .li-name{font-size:14px;font-weight:700}
+  .li-date{font-size:11px;color:var(--ink-soft);margin-top:1px}
+  .li-amt{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .li-receipt{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:99px;white-space:nowrap;cursor:pointer;user-select:none}
+  .li-receipt.yes{background:var(--green-soft);color:var(--green)}
+  .li-receipt.no{background:#FBEEE9;color:var(--red)}
+  .li-del{background:none;border:none;color:var(--gray);font-size:16px;cursor:pointer;padding:4px;font-family:inherit}
+  .log-empty{text-align:center;font-size:12.5px;color:var(--ink-soft);padding:26px 0}
+  .contacts{display:flex;flex-direction:column;gap:8px}
+  .contact-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)}
+  .contact-card .cn{font-size:13.5px;font-weight:700}
+  .contact-card .cr{font-size:11.5px;color:var(--ink-soft);margin-top:1px}
+  .contact-card a{background:var(--gold);color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:9px;white-space:nowrap}
+  .contact-card .pending{background:var(--line);color:var(--ink-soft);font-size:11.5px;font-weight:700;padding:8px 12px;border-radius:9px}
+  footer{text-align:center;font-size:11px;color:var(--ink-soft);margin-top:28px;line-height:1.7}
+  .reset-btn{background:none;border:1px solid var(--line);color:var(--ink-soft);font-size:11px;padding:6px 13px;border-radius:8px;margin-top:9px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cover">
+    <div class="cov-eyebrow">ONBIEN · AUCTION TRACKER</div>
+    <div class="cov-title">해찬가 401호</div>
+    <div class="cov-addr">강북구 수유동 281-9 · 도시형생활주택 15.97평</div>
+    <div class="cov-todo" id="covTodo"></div>
+    <div class="cov-prog">
+      <div class="cov-track"><div class="cov-fill" id="progFill"></div></div>
+      <div class="cov-meta"><span id="progText">0개 완료</span><b id="progPct">0%</b></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-tab="track">✅ 할 일</button>
+    <button class="tab" data-tab="money">💰 자금</button>
+    <button class="tab" data-tab="log">🧾 기록</button>
+  </div>
+
+  <div class="view on" id="view-track">
+    <div id="nextCard"></div>
+    <div class="sec-head"><div class="sec-title">진행 상황</div><div class="sec-sub">완료된 건 위로, 지금 할 일은 펼쳐서</div></div>
+    <div id="phases"></div>
+    <button class="contact-toggle" id="contactToggle">📞 연락처 <span id="ctChev">▼</span></button>
+    <div class="contacts" id="contacts" style="display:none"></div>
+    <footer>기록은 이 기기에만 저장됩니다.<br><button class="reset-btn" id="resetBtn">체크 기록 초기화</button></footer>
+  </div>
+
+  <div class="view" id="view-money">
+    <div class="loan-card">
+      <div class="lt">LOAN · 서천산림조합</div>
+      <div class="ln">대출 확정 ✅</div>
+      <div style="margin-top:10px">
+        <div class="lrow"><span class="ll">최초 승인</span><span class="lv">1억 6,200만</span></div>
+        <div class="lrow"><span class="ll">최종 실행액</span><span class="lv hi">1억 4,100만</span></div>
+        <div class="lrow"><span class="ll">금리</span><span class="lv">5.76%</span></div>
+        <div class="lrow"><span class="ll">중도상환</span><span class="lv">3년 0.69%</span></div>
+        <div class="lrow"><span class="ll">부수거래</span><span class="lv">없음</span></div>
+        <div class="lrow"><span class="ll">전입의무</span><span class="lv">6개월 내</span></div>
+        <div class="lrow"><span class="ll">실거주 의무</span><span class="lv hi">없음 ✓</span></div>
+      </div>
+    </div>
+    <div class="note-box note-green">실거주 의무 없음 → <b>몇 달 살다 세입자 받고 보증금으로 상환</b> 가능</div>
+
+    <div class="sheet-links">
+      <a class="sheet-btn" href="https://docs.google.com/spreadsheets/d/1NlEQmuMNF87TyQobNOCCFxPewlAhCSQbKVO9usA9WOQ/edit?usp=sharing" target="_blank">📊 임대차 시나리오 시트</a>
+      <a class="sheet-btn" href="https://docs.google.com/spreadsheets/d/13LYVsQuO5NrZiWf5Dma1MkvzVO2n37cr/edit?usp=sharing" target="_blank">🧮 예전 계산 시트 (수정필요)</a>
+    </div>
+
+    <div class="sec-head"><div class="sec-title">① 7/28 입금</div><div class="sec-sub">잔금일 하루 전 · 두 곳</div></div>
+    <div class="mini-card">
+      <div class="pay-row"><div><div class="en">산림조합</div><div class="enote">잔금 4,200만 + 인지대 7.5만 · 계좌 당일안내</div></div><div class="pay-amt">42,075,000</div></div>
+      <div class="pay-deadline">⏰ 오후 4시 마감</div>
+      <div class="pay-row"><div><div class="en">법무사 해원 (신한)</div><div class="enote">윤준영 110-240-255182 · 등기비+설정채권</div></div><div class="pay-amt">4,488,270</div></div>
+      <div class="pay-deadline">⏰ 오후 6시 마감</div>
+      <div class="mline tot" style="margin-top:8px"><span class="ml">입금 합계</span><span class="mv">46,563,270</span></div>
+    </div>
+    <div class="note-box note-blue"><b>아침 순서</b> ① 엄마 주식매도금 확인 → ② 엄마→내 계좌 700만 → ③ 산림조합(4시전) → ④ 법무사 → ⑤ 완료 문자</div>
+
+    <div class="sec-head"><div class="sec-title">② 자금 출처</div><div class="sec-sub">4,656만 마련</div></div>
+    <div class="mini-card">
+      <div class="flow-item"><span>본인 현금 (사업자금)</span><span class="amt">4,006만</span></div>
+      <div class="flow-item"><span>엄마 차용 (7월 추가분)</span><span class="amt">700만</span></div>
+      <div class="mline tot"><span class="ml">합계</span><span class="mv">4,706만</span></div>
+      <div class="mline"><span class="ml">− 입금액</span><span class="mv">4,656만</span></div>
+      <div class="mline tot"><span class="ml">남는 돈</span><span class="mv" style="color:var(--green)">약 50만</span></div>
+    </div>
+
+    <div class="sec-head"><div class="sec-title">③ 비용 내역서</div><div class="sec-sub">7/24 확정 · 취득세 1% ✅</div></div>
+    <div class="mini-card">
+      <div class="exp"><div><div class="en">취득세+교육세</div><div class="enote">1% 적용 (동거봉양) · 농특세 0</div></div><div class="ea">223.3만</div></div>
+      <div class="exp"><div><div class="en">주택채권</div><div class="enote">이전 59.6만 + 설정 26.5만 · 29일 정산</div></div><div class="ea">86.1만</div></div>
+      <div class="exp"><div><div class="en">등기 보수액</div><div class="enote">보수 26만+누진 39.3만+출장 9만+VAT</div></div><div class="ea">80.8만</div></div>
+      <div class="exp"><div><div class="en">말소 6건</div><div class="enote">등록세·증지·보수</div></div><div class="ea">24만</div></div>
+      <div class="exp"><div><div class="en">인지대·송달료·제증명 등</div><div class="enote">송달료 18.8만은 잔액 환급</div></div><div class="ea">약 40만</div></div>
+      <div class="mline tot" style="margin-top:6px"><span class="ml">등기비 합계</span><span class="mv">456.3만</span></div>
+      <div class="note-box note-blue">송달료 잔액은 <b>직접 법원에서 환급계좌 등록</b> 예정</div>
+    </div>
+
+    <div class="sec-head"><div class="sec-title">④ 집 정리 지출 (확정)</div><div class="sec-sub">언제 얼마 나가는지</div></div>
+    <div class="mini-card">
+      <div class="exp"><div><div class="en">방충망 (강철 2개)</div><div class="enote">7/31 · 세금계산서</div></div><div class="ea">88,000</div></div>
+      <div class="exp"><div><div class="en">전기 계량기 재설치</div><div class="enote">한전 대기 · 재설치비 면제</div></div><div class="ea">0</div></div>
+      <div class="exp"><div><div class="en">도시가스 개통</div><div class="enote">7/31 · 무료</div></div><div class="ea">0</div></div>
+      <div class="exp"><div><div class="en">도배 (DS벽지)</div><div class="enote">8/4 · 합지광폭 · 부가세포함</div></div><div class="ea">924,000</div></div>
+      <div class="exp"><div><div class="en">입주청소</div><div class="enote">8/5~6 · 견적 비교중</div></div><div class="ea q">24~40만</div></div>
+      <div class="mline tot" style="margin-top:6px"><span class="ml">집 정리 합계</span><span class="mv">약 140만</span></div>
+    </div>
+    <div class="note-box note-blue">📅 <b>7/31</b> 방충망+전기 약 19만 · <b>8/4</b> 도배 92만 · 청소는 도배 마른 후로 미룸</div>
+
+    <div class="sec-head"><div class="sec-title">④-2 개인 지출 (8월)</div><div class="sec-sub">사업과 별개지만 같은 통장</div></div>
+    <div class="mini-card">
+      <div class="exp"><div><div class="en">병원비</div><div class="enote">8월 초</div></div><div class="ea">36만</div></div>
+      <div class="exp"><div><div class="en">개인 카드값</div><div class="enote">8/13 출금</div></div><div class="ea">576,655</div></div>
+      <div class="mline tot" style="margin-top:6px"><span class="ml">개인 소계</span><span class="mv">약 94만</span></div>
+    </div>
+    <div class="note-box note-amber">💡 <b>현금 상황</b> 현금 약 128만 + 주식 매도 170.3만(8/4 입금). 전기 재설치비 무료. 8/29 대출 원리금 82.4만 나감. 8월 중반 부족하면 삼성 먼저 (SK 홀딩).</div>
+
+    <div class="sec-head"><div class="sec-title">④-2 세입자 구하면</div><div class="sec-sub">1회성</div></div>
+    <div class="mini-card">
+      <div class="exp"><div><div class="en">중개수수료</div><div class="enote">아담부동산</div></div><div class="ea q">60~90만</div></div>
+      <div class="exp"><div><div class="en">중도상환수수료</div><div class="enote">대출 갚을 때 0.69%</div></div><div class="ea">약 97만</div></div>
+    </div>
+
+    <div class="sec-head"><div class="sec-title">⑤ 대출 정보 · 보유 반복비용</div><div class="sec-sub">세입자 구할 때까지</div></div>
+    <div class="mini-card">
+      <div class="mline"><span class="ml">대출 원금</span><span class="mv">1억 4,100만</span></div>
+      <div class="mline"><span class="ml">금리 · 방식</span><span class="mv">5.76% · 원리금균등</span></div>
+      <div class="mline"><span class="ml">기간 · 거치</span><span class="mv">360개월 · 거치없음</span></div>
+      <div class="mline"><span class="ml">납부일</span><span class="mv">매월 29일 자동이체</span></div>
+      <div class="mline tot" style="margin-top:6px"><span class="ml">월 납입 (원리금)</span><span class="mv">약 82.4만</span></div>
+      <div class="mline"><span class="ml">└ 이자</span><span class="mv">68.9만</span></div>
+      <div class="mline"><span class="ml">└ 원금</span><span class="mv">13.4만</span></div>
+      <div class="mline"><span class="ml">→ 6개월이면</span><span class="mv">약 494만</span></div>
+      <div class="mline"><span class="ml">재산세</span><span class="mv">연 약 24만</span></div>
+      <div class="note-box note-blue">💡 <b>원리금균등이라 매달 82.4만 고정</b> (이자↓ 원금↑ 비중만 변함). 납입 며칠 전 문자로 금액 안내옴. 계좌에 넣어두면 29일 자동출금.</div>
+      <div class="note-box note-amber">💡 <b>중도상환</b>: 계좌에 넣고 전화 → 대체 처리. 수수료 <b>0.69%</b> (갚는 금액의). 이자분도 엄마 차용 예정 (공실 기간, 별도 차용증).</div>
+      <details class="loan-fold"><summary>📊 중도상환 시점별 (눌러서 펼치기)</summary>
+      <div class="loan-note">지금 분위기 좋아 <b>3달 안쪽</b> 목표. 오래 끌수록 원금은 조금 줄지만 매달 82만씩 나감.</div>
+      <table class="loan-tbl">
+        <tr><th>시점</th><th>남은원금</th><th>수수료</th></tr>
+        <tr class="hl"><td>바로</td><td>1억4,100만</td><td>972,900</td></tr>
+        <tr><td>1개월 (8/29)</td><td>1억4,085만</td><td>971,886</td></tr>
+        <tr><td>2개월 (9/29)</td><td>1억4,071만</td><td>970,867</td></tr>
+        <tr class="hl"><td>3개월 (10/29)</td><td>1억4,056만</td><td>969,844</td></tr>
+        <tr><td>4개월 (11/29)</td><td>1억4,041만</td><td>968,815</td></tr>
+        <tr><td>5개월 (12/29)</td><td>1억4,026만</td><td>967,782</td></tr>
+      </table>
+      <div class="loan-note">월납입 823,734원 · 첫달 이자 676,800 + 원금 146,934. 매달 원금↑ (2회차부터 표준계산이라 실제 문자와 몇백원 오차 가능).</div>
+      </details>
+    </div>
+
+    <div class="sec-head"><div class="sec-title">⑥ 엄마 차용금</div><div class="sec-sub">누적 관리</div></div>
+    <div class="mini-card">
+      <div class="mline"><span class="ml">5월 차용</span><span class="mv">6,000만</span></div>
+      <div class="mline"><span class="ml">7월 차용</span><span class="mv">700만</span></div>
+      <div class="mline tot"><span class="ml">원금 합계</span><span class="mv">6,700만</span></div>
+      <div class="mline"><span class="ml">+ 매달 원리금분</span><span class="mv">82.4만/월</span></div>
+      <div class="note-box"><b>2027.5까지 무이자</b> → 6월부터 연 2% (월말). 보증금 받으면 대출 먼저 갚고 → 엄마 상환.</div>
+    </div>
+
+    <div class="sec-head"><div class="sec-title">⑦ 임대 조건 (확정)</div><div class="sec-sub">1.6억 / 50만 반전세</div></div>
+    <div class="mini-card">
+      <div class="mline"><span class="ml">보증금</span><span class="mv">1억 6,000만</span></div>
+      <div class="mline"><span class="ml">월세</span><span class="mv">50만</span></div>
+      <div class="mline"><span class="ml">환산보증금</span><span class="mv">2억 1,000만</span></div>
+      <div class="mline"><span class="ml">중개수수료 (0.3%)</span><span class="mv">최대 63만</span></div>
+      <div class="mline tot" style="margin-top:6px"><span class="ml">보증금 - 대출상환</span><span class="mv">약 1,800만</span></div>
+      <div class="mline"><span class="ml">→ 엄마빚 잔여</span><span class="mv">약 4,900만</span></div>
+      <div class="flow-sub">대출 잔액 + 중도상환 97만 상환 후 · 엄마 차용 6,700만 기준</div>
+      <div class="note-box note-amber">⚠️ <b>대출 낀 세입자는 10/29 이후만 가능</b> (소유권 이전 7/29 + 3개월, 6·27 대책). 현금 세입자면 지금도 계약 가능.</div>
+      <div class="note-box note-blue">계약은 <b>다른 부동산</b>으로 (모녀 관계 문제 방지). 원리금균등이라 대출 잔액은 매달 줄어듦 → 위 중도상환 표 참고.</div>
+    </div>
+
+    <div class="sec-head"><div class="sec-title">⑧ 매도 전략</div><div class="sec-sub">2년 이상 후</div></div>
+    <div class="mini-card">
+      <div class="mline"><span class="ml">매도 목표</span><span class="mv">2억 6,000만</span></div>
+      <div class="mline"><span class="ml">보유 기간</span><span class="mv">2년 이상</span></div>
+      <div class="mline"><span class="ml">세율</span><span class="mv">기본세율</span></div>
+      <div class="note-box"><b>2년 미만 중과</b> (1년 77%, 1~2년 66%). 영수증 전부 보관 (개인으로) → 매도 시 경비처리.</div>
+    </div>
+    <footer>금액은 대략치 · 확정 시 갱신</footer>
+  </div>
+
+  <div class="view" id="view-log">
+    <div class="sec-head"><div class="sec-title">지출 · 영수증 기록</div><div class="sec-sub">2년 후 매도 때 경비처리용</div></div>
+    <div class="log-sum">
+      <div><div class="ls-l">지금까지 쓴 돈</div><div class="ls-v" id="logTotal">0만원</div></div>
+      <div style="text-align:right" id="logReceiptStat"></div>
+    </div>
+    <div class="log-form">
+      <div class="presets" id="presets"></div>
+      <div class="lf-row">
+        <input type="text" id="lfName" placeholder="항목 (예: 법무사 보수)">
+        <input type="number" id="lfAmt" class="lf-amt" placeholder="만원">
+      </div>
+      <div class="lf-row">
+        <input type="date" id="lfDate" class="lf-date">
+        <label class="lf-receipt"><input type="checkbox" id="lfReceipt" checked> 증빙 받음</label>
+      </div>
+      <button class="lf-add" id="lfAdd">+ 기록 추가</button>
+    </div>
+    <div id="logList"></div>
+    <div class="note-box note-blue" style="margin-top:14px">🧾 영수증은 <b>개인으로 받기</b> (대출이 개인 담보대출이라 매매업 노출 방지). 개인 영수증도 <b>경비 인정됨</b> — 2년 후 매도 시 세무사와 정리. 감열지·간이영수증은 <b>사진 촬영</b> 필수.</div>
+    <div class="note-box">매도한 해에 모아서 경비처리 → 세금 환급. <b>대출이자가 가장 큰 경비</b> (이자납입증명서 챙기기).</div>
+    <footer>기록은 이 기기에만 저장됩니다.</footer>
+  </div>
+</div>
+
+<script>
+const DDAY=new Date(2026,7,4);
+const KEYDATES=[
+  {n:"방충망·개통",d:new Date(2026,6,31)},
+  {n:"도배",d:new Date(2026,7,4)},
+  {n:"카드값",d:new Date(2026,7,13)}
+];
+const CONTACTS=[
+  {n:"해원법무사 김애영 부장",r:"등기 · 취득세 · 자서",t:"010-8853-1726"},
+  {n:"해원법무사 사무실",r:"부천 상동아크로텔 314호",t:"032-329-1426"},
+  {n:"서천산림조합 조용월 과장",r:"대부계 · 잔금 입금 계좌",t:"041-952-1055"},
+  {n:"서천산림조합 이선임",r:"대출 담당",t:"010-6642-1154"},
+  {n:"서천산림조합 이인애 팀장",r:"대출 상담",t:""},
+  {n:"강북구청 세무과",r:"취득세 (동거봉양 확인완료)",t:"02-901-6114"},
+  {n:"서울북부지법 경매5계",r:"사건 문의",t:"02-910-3675"},
+  {n:"DS벽지 (을지로)",r:"도배 8/4",t:""}
+];
+const PRESETS=[
+  {n:"법무사 보수",a:""},{n:"취득세",a:223},{n:"채권 차액",a:45},{n:"근저당 등록면허세",a:36},{n:"입주청소",a:30},{n:"대출 원리금",a:82}
+];
+
+const PHASES=[
+  {id:"p1",name:"낙찰 · 매각허가",when:"6/16 · 6/23",state:"done",tasks:[
+    {id:"t-nak",name:"3차 입찰 낙찰 (2억300만)",detail:`<h5>완료</h5><ul><li>입찰 3명 중 최고가 · 2등과 145만 차이</li><li>낙찰가율 73%</li><li>입찰보증금 2,000만 납부</li></ul>`},
+    {id:"t-huga",name:"매각허가결정 → 확정",detail:`<h5>완료</h5><ul><li>6/23 허가 · 항고기간 경과</li><li>대금지급기한 7/29 지정</li></ul>`}
+  ]},
+  {id:"p2",name:"대출 확정",when:"7/16",state:"done",tasks:[
+    {id:"t-loan",name:"서천산림조합 승인 → 1억4,100만 확정",detail:`<h5>조건</h5><ul><li>금리 5.76% · 중도상환 3년 0.69%</li><li>부수거래 없음</li><li>전입의무 6개월 내</li><li><b>실거주 의무 없음</b> ✓</li></ul><div class="warn">7/22 감액 통보: 1억5,000만 → <b>1억4,100만</b> (900만↓). 이유 미확인 → 자서 때 확인!</div>`},
+    {id:"t-loanq",name:"실거주 의무 확인 완료",detail:`<h5>확인 결과</h5><ul><li>전입 6개월 내 (대한민국 주택 공통)</li><li><b>실거주 의무 없음</b></li><li>→ 몇 달 살다 세입자 받고 보증금으로 상환 가능</li></ul>`}
+  ]},
+  {id:"p3",name:"자서 준비",when:"~ 7/22",state:"done",tasks:[
+    {id:"t-msg",name:"법무사 연락처 확보 ✅",when:"완료",detail:`<h5>확보 완료</h5><ul><li>해원법무사 김애영 부장</li><li>010-8853-1726</li><li>부천 상동아크로텔 314호</li></ul>`},
+    {id:"t-tax",name:"취득세 1% 확인 ✅",when:"완료",detail:`<h5>강북구청 세무과 확인</h5><ul><li><b>동거봉양 특례</b> 적용</li><li>어머니 65세 이상 + 본인 30세 이상</li><li>→ 같은 집 살아도 <b>별도 세대로 간주</b></li></ul><h5>결과</h5><ul><li>취득세 <b>1%</b> (약 223만)</li><li>6억 이하라 농특세 없음</li><li><b>세대분리 불필요!</b> 현재 주소 그대로</li></ul><div class="note">비용내역서에 1% 반영 확인 완료</div>`},
+    {id:"t-docs2",name:"자서 서류 발급 ✅",when:"완료",detail:`<h5>준비 완료</h5><ul><li>인감증명서 2통, 등본·초본 2통</li><li>가족관계증명서, 건강보험 서류</li><li>소득금액증명, 국세·지방세 증명</li></ul><div class="note">전부 주민번호·주소 다 나오게 발급</div>`}
+  ]},
+  {id:"p4",name:"자서 완료 ✅",when:"7/23",state:"done",tasks:[
+    {id:"t-jaseo",name:"자서 — 서천산림조합 ✅",when:"7/23 완료",detail:`<h5>완료</h5><ul><li>부천 해원법무사에서 자필서명</li><li>대출 1억 4,100만 확정</li><li>비용내역서 수령 → 농특세 40.6만 삭제</li></ul><div class="note">잔금일 7/29 확정 · 28일 하루 전 입금</div>`}
+  ]},
+  {id:"p5",name:"7/28 입금 ✅",when:"완료",state:"done",alert:"이체한도 1억으로 올려서 처리. 계좌는 직접 전화해서 알아냄.",tasks:[
+    {id:"t-limit2",name:"이체한도 상향 ✅",when:"완료",detail:`<ul><li>1억으로 상향 완료</li></ul>`},
+    {id:"t-momtransfer",name:"엄마 → 내 계좌 (700만) ✅",when:"완료",detail:`<ul><li>주식 매도금으로 이체 완료</li></ul>`},
+    {id:"t-loanpaper",name:"차용증 우편 발송 ✅",when:"완료",detail:`<ul><li>엄마 700만 차용증 우편 완료</li></ul>`},
+    {id:"t-pay-sanrim",name:"산림조합 입금 ✅",when:"완료",detail:`<ul><li>42,075,000 입금 완료</li><li>조합원 가입비 1,000원 포함</li></ul><div class="note">통장 실물은 대출 완료 후 우편으로 옴</div>`},
+    {id:"t-pay-bmsa",name:"법무사 입금 ✅",when:"완료",detail:`<ul><li>4,488,270 입금 완료</li></ul>`}
+  ]},
+  {id:"p6",name:"잔금일 (7/29) ✅",when:"소유권 취득 🎉",state:"done",alert:"잔금·등기 완료! 임차인 협의로 인도명령 취소·환불. 인지대 중복·채권차액도 환불받음.",tasks:[
+    {id:"t-pay",name:"잔금 납부 → 소유권 취득 ✅",place:"동대문 법원",detail:`<ul><li>법무사와 법원에서 처리 완료</li><li>대금완납증명원 작성·제출</li><li><b>소유권 취득 완료</b> 🎉</li></ul>`},
+    {id:"t-refund",name:"환불 3건 받음 ✅",flag:"star",detail:`<h5>부장님이 확인해준 환불</h5><ul><li>인지대 중복분 (산림조합에 낸 게 맞아서)</li><li>주택채권 차액 (할인율 좋아짐)</li><li>인도명령 비용 (임차인 협의로 신청 안 함)</li></ul><div class="note">최종 정산 내역서 원본 잘 보관</div>`},
+    {id:"t-tenant",name:"임차인 통화 → 짐 처분 동의 ✅",flag:"star",detail:`<h5>김지연 씨 통화 완료</h5><ul><li>HUG로 보증금 다 받음 (미련 없음)</li><li>2024년쯤 이사, 짐 다 치웠다 함</li><li>"남은 거 있으면 다 버리셔도 돼요"</li><li>에어컨·인덕션 옵션 → 두고 감 (써도 됨)</li><li>도어락 1111, 건물 출입구 비번도 있음</li></ul><div class="note">통화 후 문자로 재확인함 (짐 처분 동의 증거)</div>`},
+    {id:"t-reg",name:"등기·취득세 (법무사) ✅",place:"법무사 처리",detail:`<ul><li>취득세 1% 납부</li><li>소유권이전 촉탁등기</li><li>근저당 설정</li></ul><div class="note">등기필증은 1~2주 후 우편 (아래 단계)</div>`},
+    {id:"t-home",name:"집 확인 ✅ (도어락 1111)",place:"해찬가 401호",detail:`<ul><li>도어락 <b>1111</b>로 열림 ✅ (건전지 새로 넣음)</li><li>공실 4월부터 (오래 비어있음)</li><li>남은 짐: 냄비1, 앵글선반1 (처분 동의받음)</li><li>옵션: 스탠드에어컨, 인덕션 (두고 감)</li><li>공실 사진 촬영함</li></ul>`}
+  ]},
+  {id:"p7",name:"집 상태 파악 ✅",when:"완료",state:"done",tasks:[
+    {id:"t-wallpaper",name:"도배 필요 여부 확인 ✅",detail:`<ul><li>도배 필요 → 하기로 결정</li><li>곰팡이 2곳(거실 창가·방 구석) 확인</li></ul>`},
+    {id:"t-boiler",name:"보일러 연식 확인 ✅",detail:`<ul><li>확인함</li><li>세입자 고지사항</li></ul>`}
+  ]},
+  {id:"p8",name:"집 정리",when:"7/31~",state:"active",alert:"7/31 오전 몰림: 수도(9시)·방충망(10시)·전기·가스(오후). 도배 8/4. 등기필증은 1~2주 후 우편.",tasks:[
+    {id:"t-water",name:"수도 (분리정산 대기)",when:"9월 청구 예정",detail:`<h5>파악됨</h5><ul><li>홀수달 청구(1·3·5·7...), 25일 기준</li><li>6/25~8/24분이 <b>9월 청구</b></li><li>잔금일(7/29)부터 일할계산</li><li>담당자가 <b>수기로</b> 정산 (전산 아님) → 오래 걸림</li></ul><div class="note">고지서 정리 안 된 상태로 청구될 수 있음. 담당자 계좌 정산 방식이라 기다려야 함.</div>`},
+    {id:"t-screen",name:"방충망 설치 (강철 2개)",when:"7/31 오전10시",rcpt:true,detail:`<h5>강철 방충망</h5><ul><li>2개 88,000 (부가세 포함, 세금계산서)</li><li>거실 120×170, 작은방 75×110</li><li>다용도실 90×110은 애매 → 방문 시 결정</li></ul><div class="note">일반보다 강철이 튼튼한데 더 쌈</div>`},
+    {id:"t-elec",name:"전기 계량기 재설치",when:"한전 처리 대기",flag:"warn",detail:`<h5>상황</h5><ul><li>미납 오래돼서 <b>계량기 철거됨</b></li><li><b>재설치 수수료 없음</b> ✅ (면제 확인)</li><li>서류 다 제출함 (7/31)</li></ul><div class="note">요금수납과↔123 뺑뺑이(서류가 다시 요금수납과로)... 재촉해도 서류만 돎 → 그냥 기다리는 게 나음. 이게 도배·청소 다 잡고 있음.</div>`},
+    {id:"t-gas",name:"도시가스 개통",when:"7/31 오후1~2시",detail:`<ul><li>기사 방문 (개통 비용 무료)</li><li>개통 후 보일러 작동 확인</li></ul>`},
+    {id:"t-option",name:"옵션 작동 확인 (전기·가스 후)",flag:"star",detail:`<h5>전기·가스 들어오면</h5><ul><li>스탠드 에어컨 (2년 방치, 작동 미지수)</li><li>인덕션 (2년 방치)</li><li>보일러 (가스 개통 후)</li></ul><div class="note">에어컨은 상태 괜찮으면 세입자 옵션. 안 되면 교체 고려.</div>`},
+    {id:"t-wallpaper2",name:"도배 (DS벽지)",when:"전기 후 (8/4→밀림)",flag:"star",rcpt:true,detail:`<h5>확정 (날짜만 밀림)</h5><ul><li>DS벽지 (을지로) <b>84만 + 부가세 = 924,000</b></li><li>합지 광폭</li><li>계약금 없음, 당일 잔금</li><li>세금계산서 사업자 발행</li></ul><h5>준비물</h5><ul><li><b>종량제 봉투 큰 거 2~3장</b> (당일)</li><li><b>시원한 물·커피·이온음료</b> (도배 3분 오심, 넉넉히)</li></ul><div class="note">⚠️ 8/4였는데 전기 안 나와서 밀림 (풀기계·조명 전기 필요). 전기 들어오면 새 날짜. 곰팡이 2곳 심하지 않음, 초배 필요시 +10~15만.</div>`},
+    {id:"t-clean",name:"입주청소",when:"도배 마른 후 (미룸)",rcpt:true,detail:`<h5>견적 비교 중</h5><ul><li>삐까뻔쩍 24만 (쎄해서 보류)</li><li>타 업체 30·40·43만</li><li>계약금 안 걸었음 → 더 알아보는 중</li></ul><h5>결제</h5><ul><li>계좌이체 + 세금계산서(사업자)</li><li>부가세 10% 별도, 뽁뽁이 자국 추가 1~2만</li></ul><div class="note">도배 마르고 냄새 빠진 뒤 청소가 좋음 → 일부러 미룸. 쎄한 곳은 거르기.</div>`},
+    {id:"t-mgmt",name:"관리비 확인",rcpt:true,detail:`<ul><li>주민 자율관리 (관리사무소 없음)</li><li>월 2~3만 (다들 헷갈려함 ㅎㅎ) → 2만으로 잡음</li><li>정화조·건물수선 시 추렴 있을 수 있음</li></ul>`},
+    {id:"t-deed",name:"등기필증 우편 수령 → 등기부 확인",when:"잔금 1~2주 후",flag:"star",detail:`<h5>등기필증(집문서)</h5><ul><li>촉탁 후 <b>1~2주 뒤 우편</b> 도착</li><li>바로 안 나옴 — 기다리면 됨</li></ul><h5>오면 확인</h5><ul><li>등기부등본 떼서 대조</li><li>소유권 이전·말소 6건 확인</li></ul>`},
+    {id:"t-jeonip",name:"해찬가 전입신고",when:"8/2(일) 온라인",detail:`<ul><li>정부24 온라인 (주말도 가능, 공동인증서)</li><li>대출 조건 (6개월 내라 급하진 않음)</li></ul><div class="note">건강보험 타이밍 신경 쓰이면 공단(1577-1000) 확인 후. 완납증명서로 등기 전에도 가능.</div>`}
+  ]},
+  {id:"p9",name:"세입자 구하기",when:"집 정리 후",state:"upcoming",alert:"⚠️ 대출 낀 세입자는 10/29 이후만 가능 (소유권 이전 3개월 규제). 현금 세입자면 지금도 OK.",tasks:[
+    {id:"t-price",name:"임대 조건 확정 ✅",flag:"star",detail:`<h5>확정: 1.6억 / 월 50만 (반전세)</h5><ul><li>보증금 1억 6,000만</li><li>월세 50만</li><li>환산보증금 2억 1,000만</li></ul><h5>보증금 받으면</h5><ul><li>대출 상환 약 1억 4,0xx만 (원리금균등이라 시점별로 다름)</li><li>중도상환수수료 약 97만</li><li>→ 엄마빚에 약 1,800만 상환 가능</li></ul><div class="note">원리금균등이라 매달 원금 13~15만씩 줄어듦. 정확한 잔액은 자금 탭 중도상환 표 참고.</div>`},
+    {id:"t-list",name:"광고 뿌리기",when:"청소 후",detail:`<h5>어디에</h5><ul><li><b>수유역·미아역 근처</b> 부동산</li><li>→ 요새 조건 줄여 알아보는 수요 많아 역세권 유리</li></ul><h5>계약은 다른 부동산으로</h5><ul><li>손님은 우리한테 왔지만 <b>모녀 관계라 나중에 문제될 수 있음</b></li><li>→ 제3자 중개사 끼고 정식 계약</li><li>중개수수료 최대 <b>63만</b> (0.3%, 부가세 별도)</li></ul><div class="note">수수료 증빙(세금계산서/현금영수증) 받아두기 — 매매업 경비 가능</div>`},
+    {id:"t-contract",name:"계약 준비 (특약·서류)",flag:"warn",detail:`<h5>특약 2줄</h5><ul><li>1. 실내 흡연 및 반려동물 불가.</li><li>2. 퇴거 시, 다음 임차인 등의 방문에 협조한다.</li></ul><div class="note">원상복구는 표준계약서에 이미 있어 생략. 근저당 말소는 대출 조건이라 자동.</div><h5>준비 서류</h5><ul><li>국세 완납증명서 (홈택스)</li><li>지방세 완납증명서 (위택스)</li></ul><h5>손님한테 물어볼 것</h5><ul><li><b>입주 희망일</b> ⭐</li><li><b>에어컨 철거 원하는지</b> (빼면 폐가전 무상수거 알아보기)</li><li>보증금 대출 쓰는지 → <b>쓴다면 10/29 이후만 가능</b></li></ul>`},
+    {id:"t-jeonchul",name:"엄마집으로 전입 정리",when:"세입자 들어오면",detail:`<ul><li>대출 전입 조건(6개월)은 이미 충족 ✅</li><li>실제 안 사는 곳에 주소 둘 이유 없음</li><li>세입자가 등본 봤을 때 찜찜해할 수 있음</li></ul><div class="note">세입자 전입 자체는 선진씨가 남아있어도 가능. 그래도 정리하는 게 깔끔.</div>`}
+  ]},
+  {id:"p10",name:"보증금 받으면",when:"세입자 확정",state:"upcoming",tasks:[
+    {id:"t-repay",name:"보증금으로 상환",detail:`<h5>상환 순서</h5><ul><li>① 대출 1억 4,100만 <b>즉시 상환</b> (금리 5.76%)</li><li>② 중도상환수수료 약 97만</li><li>③ 엄마 차용금 (원금 6,700만 + 이자분)</li></ul><div class="note">대출(5.76%) 먼저, 엄마(2%) 나중. 보증금 높을수록 엄마 빚 빨리 갚음.</div>`},
+    {id:"t-momint",name:"이자분 엄마 차용 정리",detail:`<h5>상황</h5><ul><li>공실 기간 대출 원리금(월 82.4만)을 엄마에게 차용 예정</li><li>아직 엄마와 관련 상의 전</li></ul><h5>할 것</h5><ul><li>이자분에 대한 <b>별도 차용증</b> 작성</li><li>몇 달 걸릴지 확정된 후 정리</li></ul>`}
+  ]},
+  {id:"p11",name:"보유 중 (계속)",when:"매도까지",state:"upcoming",alert:"재산세 매년 7·9월, 엄마 차용 이자 2027.6부터. 영수증은 매도까지 계속 모으기.",tasks:[
+    {id:"t-tax2",name:"재산세 납부",when:"매년 7·9월",rcpt:true,detail:`<ul><li>연 약 24만 (7월·9월 절반씩)</li><li>위택스에서 자동 고지</li><li>납부확인서 보관 (경비)</li></ul>`},
+    {id:"t-renttax",name:"임대소득세 (5월 신고)",when:"매년 5월",detail:`<h5>월세에 붙는 세금</h5><ul><li>연 임대수입 = 월세 × 12 (600~780만)</li><li>연 2천 이하 → <b>분리 14% vs 종합 6%</b> 중 선택</li><li><b>소득 적으니 종합과세 6%가 유리</b></li></ul><div class="note">5월 종합소득세 때 신고. 필요경비·공제 빼면 실제 세금 적음.</div>`},
+    {id:"t-momint2",name:"엄마 차용금 이자 시작",when:"2027.6~",detail:`<ul><li>2027년 5월까지 무이자</li><li><b>6월부터 연 2%</b> (월말 지급)</li><li>그 전에 최대한 갚아두면 이자 절감</li></ul>`},
+    {id:"t-receipt",name:"영수증 모으기 (개인으로)",when:"매도까지",rcpt:true,detail:`<h5>왜</h5><ul><li>2년 후 매도 시 경비처리 → 세금 환급</li></ul><h5>어떻게</h5><ul><li>폰 앨범 "해찬가401_영수증"</li><li><b>사업자번호 말고 개인으로 받기</b> (대출이 개인 담보대출이라 매매업 노출 방지)</li><li>감열지는 2년 지나면 글씨 날아감 → <b>사진 촬영</b></li></ul><h5>모을 것</h5><ul><li>대출이자 (이자납입증명서) ⭐ 가장 큰 경비</li><li>재산세, 도배·청소·수선비, 중개수수료</li></ul><div class="note">개인 영수증도 경비 인정됨.</div>`},
+    {id:"t-selltax",name:"매도 시 세금 (참고)",when:"2년 후",detail:`<h5>매도차익 = 사업소득</h5><ul><li>종합소득세 누진 (6~45%)</li><li>임대+매매 <b>같은 해 겹치면 합산</b> → 세율↑</li><li>→ <b>매도 타이밍 중요</b></li></ul><div class="note">2년 이상 보유 후 매도 (단기중과 회피). 매도 전 세무사와 상의.</div>`}
+  ]}
+];
+
+const KEY="haechanga401_v4";
+const store={
+  get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+};
+let state=JSON.parse(store.get(KEY)||"null");
+if(!state){state=JSON.parse(store.get("haechanga401_v3")||"{}");}
+// 자서까지 완료 (항상)
+["t-nak","t-huga","t-loan","t-loanq","t-msg","t-tax","t-docs2","t-jaseo"].forEach(id=>{if(!(id in state))state[id]=true;});
+// 7/31까지 실제 완료된 것 (seed 1회만 - 이후엔 사용자 조작 우선)
+if(!state["_seed_0731"]){
+  ["t-limit2","t-momtransfer","t-loanpaper","t-pay-sanrim","t-pay-bmsa","t-pay","t-refund","t-tenant","t-reg","t-home","t-wallpaper","t-boiler","t-screen","t-gas"].forEach(id=>{state[id]=true;});
+  state["_seed_0731"]=true;
+}
+// 진행중 메모 최신화 (8/2 - 수도·전기 상황 갱신, 완료 안 했으면만)
+if(!state["_seed_0802"]){
+  if(!state["t-water"])state["_prog_t-water"]="9월 청구 예정, 담당자 수기정산이라 오래 걸림";
+  if(!state["t-elec"])state["_prog_t-elec"]="서류 제출 완료. 한전 요금수납과↔123 뺑뺑이라 그냥 대기. 재설치비 없음";
+  state["_seed_0802"]=true;
+}
+store.set(KEY,JSON.stringify(state));
+let logs=JSON.parse(store.get(KEY+"_log")||store.get("haechanga401_v3_log")||"[]");
+function save(){store.set(KEY,JSON.stringify(state))}
+function saveLog(){store.set(KEY+"_log",JSON.stringify(logs))}
+function allTasks(){return PHASES.flatMap(p=>p.tasks.map(t=>({...t,phase:p})))}
+function fmtStamp(iso){const d=new Date(iso);const mm=d.getMonth()+1,dd=d.getDate();let h=d.getHours(),m=String(d.getMinutes()).padStart(2,"0");const ap=h<12?"오전":"오후";h=h%12||12;return "✓ "+mm+"/"+dd+" "+ap+" "+h+":"+m;}
+function daysTo(d){const now=new Date();now.setHours(0,0,0,0);return Math.ceil((d-now)/864e5);}
+function renderCover(){
+  const buckets={};PHASES.forEach(p=>buckets[p.id]=[]);
+  PHASES.forEach(p=>p.tasks.forEach(t=>{const pid=state["_move_"+t.id]||p.id;(buckets[pid]||buckets[p.id]).push(t);}));
+  const todo=[];
+  PHASES.forEach(p=>buckets[p.id].forEach(t=>{if(!state[t.id])todo.push({t,phase:p});}));
+  const host=document.getElementById("covTodo");
+  if(!todo.length){host.innerHTML='<div class="ct-done">🎉 모든 할 일 완료!</div>';}
+  else{
+    host.innerHTML=todo.slice(0,4).map((x,i)=>{
+      const prog=state["_prog_"+x.t.id]!==undefined;
+      const lab=prog?"진행중":(i===0?"지금":"다음");
+      const w=x.t.when?'<span class="ct-when">'+x.t.when+'</span>':"";
+      return '<div class="ct-item'+(i===0?" now":"")+(prog?" prog":"")+'" data-ctgo="'+x.t.id+'"><span class="ct-tag">'+lab+'</span><span class="ct-name">'+x.t.name.replace(/\s*✅$/,"")+'</span>'+w+'</div>';
+    }).join("");
+  }
+  const t=allTasks(),d=t.filter(x=>state[x.id]).length,pct=Math.round(d/t.length*100);
+  document.getElementById("progFill").style.width=pct+"%";
+  document.getElementById("progText").innerHTML="<b>"+d+"</b>/"+t.length+" 완료";
+  document.getElementById("progPct").textContent=pct+"%";
+}
+function renderNext(){
+  const next=allTasks().find(t=>!state[t.id]);
+  const host=document.getElementById("nextCard");
+  if(!next){host.innerHTML='<div class="next-card next-done"><div class="next-lab">ALL CLEAR</div><div class="next-name">모든 할 일 완료! 🎉</div></div>';return;}
+  const pname=(next.phase&&next.phase.name)||"";
+  host.innerHTML='<div class="next-card" id="nextGo"><div class="next-lab">지금 할 일</div><div class="next-name">'+flagBadge(next.flag)+next.name.replace(/\s*✅$/,"")+'</div>'+(next.when?'<div class="next-when">⏰ '+next.when+'</div>':"")+'<div class="next-phase">단계 · '+pname+'</div><div class="next-go">바로가기 →</div></div>';
+  document.getElementById("nextGo").onclick=()=>{
+    const pid=taskPhaseId(next,next.phase&&next.phase.id);
+    state["_open_"+pid]=true;state["_exp_"+next.id]=true;save();renderAll();
+    setTimeout(()=>{const el=document.querySelector('[data-exp="'+next.id+'"]');if(el)el.scrollIntoView({behavior:"smooth",block:"center"});},120);
+  };
+}
+// task가 표시될 단계 id (사용자가 옮겼으면 그 위치)
+function taskPhaseId(t,origPid){return state["_move_"+t.id]||origPid;}
+function flagBadge(f){
+  if(f==="warn")return '<span class="fbadge warn">⚠️</span>';
+  if(f==="star")return '<span class="fbadge star">⭐</span>';
+  return "";
+}
+function renderPhases(){
+  const host=document.getElementById("phases");host.innerHTML="";
+  // 각 단계에 표시할 task 모으기 (이동 반영)
+  const buckets={};PHASES.forEach(p=>buckets[p.id]=[]);
+  PHASES.forEach(p=>p.tasks.forEach((t,i)=>{
+    const pid=taskPhaseId(t,p.id);
+    (buckets[pid]||buckets[p.id]).push({t,orig:p.id,baseIdx:i});
+  }));
+  // 사용자 지정 순서(_order_) 반영해 정렬
+  Object.keys(buckets).forEach(pid=>{
+    buckets[pid].sort((a,b)=>{
+      const oa=state["_order_"+a.t.id],ob=state["_order_"+b.t.id];
+      const va=(oa!==undefined?oa:a.baseIdx+ (a.orig!==pid?100:0));
+      const vb=(ob!==undefined?ob:b.baseIdx+ (b.orig!==pid?100:0));
+      return va-vb;
+    });
+  });
+  // 현재 진행 단계 찾기 (완료 안 된 첫 단계)
+  let activeIdx=PHASES.findIndex(p=>buckets[p.id].some(x=>!state[x.t.id]));
+  if(activeIdx<0)activeIdx=PHASES.length-1;
+  // 완료된 과거 단계는 하나의 접이식 묶음으로
+  const pastPhases=PHASES.filter((p,idx)=>idx<activeIdx);
+  if(pastPhases.length){
+    const pastOpen=!!state["_pastOpen"];
+    const wrap=document.createElement("div");
+    wrap.className="past-group"+(pastOpen?" open":"");
+    let inner="";
+    pastPhases.forEach((p,idx)=>{
+      const items=buckets[p.id];
+      inner+='<div class="phase done past open"><div class="phase-head" data-ph="'+p.id+'"><div class="phase-dot">✓</div><div class="phase-titles"><div class="phase-name">'+p.name+'</div><div class="phase-when">'+p.when+'</div></div></div><div class="phase-body">'+
+        items.map(({t})=>{
+          const exp=!!state["_exp_"+t.id];
+          return '<div class="task done '+(exp?"expanded":"")+'" data-tid="'+t.id+'"><div class="task-row"><div class="check" data-check="'+t.id+'"><svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg></div><div class="task-main" data-exp="'+t.id+'"><div class="task-name">'+t.name.replace(/\s*✅$/,"")+'</div>'+(t.when?'<div class="task-when">'+t.when+'</div>':"")+(t.place?'<div class="task-when">📍 '+t.place+'</div>':"")+(t.detail?'<div class="task-expand">'+(exp?"접기 ▲":"상세보기 ▼")+'</div>':"")+'</div></div>'+(t.detail?'<div class="task-detail">'+t.detail+'</div>':"")+'</div>';
+        }).join("")+'</div></div>';
+    });
+    wrap.innerHTML='<div class="past-bar" id="pastBar">✅ 완료된 단계 '+pastPhases.length+'개 <span class="past-chev">'+(pastOpen?"▲ 접기":"▼ 펼치기")+'</span></div><div class="past-inner">'+inner+'</div>';
+    host.appendChild(wrap);
+  }
+  PHASES.forEach((p,idx)=>{
+    if(idx<activeIdx)return; // 과거 단계는 위 묶음에서 처리
+    const items=buckets[p.id];
+    const dc=items.filter(x=>state[x.t.id]).length;
+    const all=items.length>0&&dc===items.length;
+    const isPast=idx<activeIdx;         // 지난 단계 → 흐릿+접힘
+    const isActive=idx===activeIdx;     // 현재 단계 → 펼침
+    const open=state["_open_"+p.id]!==undefined?state["_open_"+p.id]:isActive;
+    const ph=document.createElement("div");
+    ph.className="phase "+(all?"done ":"")+(isPast?"past ":"")+(isActive?"active ":"")+(open?"open":"");
+    if(isActive)ph.id="activePhase";
+    let head='<div class="phase-head" data-ph="'+p.id+'"><div class="phase-dot">'+(all?"✓":(idx+1))+'</div><div class="phase-titles"><div class="phase-name">'+p.name+'</div><div class="phase-when">'+p.when+'</div></div><div class="phase-count">'+dc+"/"+items.length+'</div><svg class="phase-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>';
+    let body='<div class="phase-body">';
+    if(p.alert)body+='<div class="phase-alert">💡 '+p.alert+'</div>';
+    body+=items.map(({t})=>{
+      const done=!!state[t.id],exp=!!state["_exp_"+t.id];
+      const prog=state["_prog_"+t.id];
+      const rcpt=t.rcpt?(state["_rcpt_"+t.id]?'<span class="rbadge got" data-rcpt="'+t.id+'">🧾 받음 ✓</span>':'<span class="rbadge" data-rcpt="'+t.id+'">🧾 영수증</span>'):"";
+      const progBadge=(!done&&prog!==undefined)?'<span class="pbadge" data-prog="'+t.id+'">🔄 진행중</span>':"";
+      const progMemo=(!done&&prog)?'<div class="pmemo" data-pmemo="'+t.id+'">📝 '+prog+'</div>':"";
+      const checkCls=(!done&&prog!==undefined)?"check prog":"check";
+      return '<div class="task '+(done?"done":"")+' '+(prog!==undefined&&!done?"proging":"")+' '+(exp?"expanded":"")+'" data-tid="'+t.id+'"><div class="task-row"><div class="'+checkCls+'" data-check="'+t.id+'"><svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg></div><div class="task-main" data-exp="'+t.id+'"><div class="task-name">'+flagBadge(t.flag)+t.name.replace(/\s*✅$/,"")+progBadge+'</div>'+(t.when?'<div class="task-when">'+t.when+'</div>':"")+(t.place?'<div class="task-when">📍 '+t.place+'</div>':"")+rcpt+progMemo+'<div class="task-stamp">'+(state["_time_"+t.id]?fmtStamp(state["_time_"+t.id]):"")+'</div>'+(t.detail?'<div class="task-expand">'+(exp?"접기 ▲":"상세보기 ▼")+'</div>':"")+'</div><div class="task-grip">⋮⋮</div></div>'+(t.detail?'<div class="task-detail">'+t.detail+'</div>':"")+'</div>';
+    }).join("")+'</div>';
+    ph.innerHTML=head+body;
+    host.appendChild(ph);
+  });
+  bindTaskDrag();
+  // 도어락 시도 상태 복원
+  document.querySelectorAll("[data-d]").forEach(s=>{if(state["_dtry_"+s.dataset.d])s.classList.add("tried");});
+}
+function renderLog(){
+  const total=logs.reduce((s,l)=>s+(+l.amount||0),0);
+  const noR=logs.filter(l=>!l.receipt).length;
+  document.getElementById("logTotal").textContent=total.toLocaleString("ko-KR")+"만원";
+  document.getElementById("logReceiptStat").innerHTML=noR>0?'<div class="ls-warn">⚠ 증빙 없음 '+noR+'건</div>':(logs.length?'<div class="ls-ok">✓ 증빙 전부 확보</div>':"");
+  const host=document.getElementById("logList");
+  if(!logs.length){host.innerHTML='<div class="log-empty">아직 기록이 없어요.<br>지출하면 바로 여기 남기세요!</div>';return;}
+  host.innerHTML=logs.slice().reverse().map(l=>'<div class="log-item"><div class="li-main"><div class="li-name">'+l.name+'</div><div class="li-date">'+l.date+'</div></div><div class="li-amt">'+(+l.amount).toLocaleString("ko-KR")+'만</div><span class="li-receipt '+(l.receipt?"yes":"no")+'" data-lr="'+l.id+'">'+(l.receipt?"증빙 ✓":"증빙 ✗")+'</span><button class="li-del" data-ld="'+l.id+'">✕</button></div>').join("");
+}
+function initLogForm(){
+  document.getElementById("lfDate").value=new Date().toISOString().slice(0,10);
+  document.getElementById("presets").innerHTML=PRESETS.map((p,i)=>'<button class="preset" data-pre="'+i+'">'+p.n+(p.a?" "+p.a+"만":"")+'</button>').join("");
+}
+document.addEventListener("click",e=>{
+  const ctgo=e.target.closest("[data-ctgo]");
+  if(ctgo){const id=ctgo.dataset.ctgo;
+    let pid=null;PHASES.forEach(p=>p.tasks.forEach(t=>{if(t.id===id)pid=state["_move_"+id]||p.id;}));
+    if(pid)state["_open_"+pid]=true;
+    state["_exp_"+id]=true;save();renderAll();
+    setTimeout(()=>{const el=document.querySelector('[data-exp="'+id+'"]');if(el)el.scrollIntoView({behavior:"smooth",block:"center"});},120);
+    return;}
+  const pb=e.target.closest("[data-prog]");
+  if(pb){e.stopPropagation();const id=pb.dataset.prog;editProgMemo(id);return;}
+  const pm=e.target.closest("[data-pmemo]");
+  if(pm){e.stopPropagation();const id=pm.dataset.pmemo;editProgMemo(id);return;}
+  const rc=e.target.closest("[data-rcpt]");
+  if(rc){e.stopPropagation();const id=rc.dataset.rcpt;state["_rcpt_"+id]=!state["_rcpt_"+id];save();renderPhases();return;}
+  const dl=e.target.closest("[data-d]");
+  if(dl){dl.classList.toggle("tried");const key="_dtry_"+dl.dataset.d;state[key]=!state[key];save();return;}
+  const chk=e.target.closest("[data-check]");
+  if(chk){cycleTask(chk.dataset.check);return;}
+  const exp=e.target.closest("[data-exp]");
+  if(exp){state["_exp_"+exp.dataset.exp]=!state["_exp_"+exp.dataset.exp];save();renderAll();return;}
+  const ph=e.target.closest("[data-ph]");
+  if(ph){const id=ph.dataset.ph;const cur=e.target.closest(".phase").classList.contains("open");state["_open_"+id]=!cur;save();renderAll();return;}
+  const pre=e.target.closest("[data-pre]");
+  if(pre){const p=PRESETS[+pre.dataset.pre];document.getElementById("lfName").value=p.n;document.getElementById("lfAmt").value=p.a;return;}
+  const lr=e.target.closest("[data-lr]");
+  if(lr){const l=logs.find(x=>x.id===lr.dataset.lr);if(l){l.receipt=!l.receipt;saveLog();renderLog();}return;}
+  const ld=e.target.closest("[data-ld]");
+  if(ld){if(confirm("이 기록을 삭제할까요?")){logs=logs.filter(x=>x.id!==ld.dataset.ld);saveLog();renderLog();}return;}
+});
+function toggleTask(id){
+  if(state[id]){delete state[id];delete state["_time_"+id];}
+  else{state[id]=true;state["_time_"+id]=new Date().toISOString();delete state["_exp_"+id];}
+  save();renderAll();
+}
+// 체크박스 3단계: 안함 → 진행중 → 완료 → 안함
+function cycleTask(id){
+  const done=!!state[id], prog=state["_prog_"+id]!==undefined;
+  if(done){ // 완료 → 안함
+    delete state[id];delete state["_time_"+id];delete state["_prog_"+id];
+  }else if(prog){ // 진행중 → 완료
+    state[id]=true;state["_time_"+id]=new Date().toISOString();delete state["_prog_"+id];delete state["_exp_"+id];
+  }else{ // 안함 → 진행중
+    state["_prog_"+id]="";
+  }
+  save();renderAll();
+}
+function editProgMemo(id){
+  const cur=state["_prog_"+id]||"";
+  const memo=prompt("진행 상황 메모 (예: 담당자 연락 대기중)",cur);
+  if(memo===null)return; // 취소
+  state["_prog_"+id]=memo;
+  save();renderAll();
+}
+document.getElementById("lfAdd").addEventListener("click",()=>{
+  const name=document.getElementById("lfName").value.trim();
+  const amt=document.getElementById("lfAmt").value;
+  const date=document.getElementById("lfDate").value;
+  const receipt=document.getElementById("lfReceipt").checked;
+  if(!name||!amt){alert("항목과 금액을 입력해주세요!");return;}
+  logs.push({id:Date.now()+"",name,amount:+amt,date,receipt});
+  saveLog();
+  document.getElementById("lfName").value="";document.getElementById("lfAmt").value="";
+  document.getElementById("lfReceipt").checked=true;
+  renderLog();
+});
+document.querySelectorAll(".tab").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
+    document.getElementById("view-"+b.dataset.tab).classList.add("on");
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+document.getElementById("contacts").innerHTML=CONTACTS.map(c=>'<div class="contact-card"><div><div class="cn">'+c.n+'</div><div class="cr">'+c.r+'</div></div>'+(c.t?'<a href="tel:'+c.t.replace(/-/g,"")+'">'+c.t+'</a>':'<span class="pending">번호 대기</span>')+'</div>').join("");
+/* 연락처 접기 */
+document.getElementById("contactToggle").addEventListener("click",()=>{
+  const box=document.getElementById("contacts");
+  const open=box.style.display!=="none";
+  box.style.display=open?"none":"";
+  document.getElementById("ctChev").textContent=open?"▼":"▲";
+});
+/* ===== 카드를 꾹 눌러 다른 단계로 이동 ===== */
+function bindTaskDrag(){
+  document.querySelectorAll(".task").forEach(card=>{
+    card.addEventListener("pointerdown",onTaskDown);
+  });
+}
+function onTaskDown(e){
+  if(e.target.closest("[data-check]")||e.target.closest("[data-exp]")||e.target.closest(".task-detail")||e.target.closest("[data-rcpt]")||e.target.closest("[data-d]"))return;
+  const card=e.currentTarget;
+  const startX=e.clientX,startY=e.clientY;
+  let ghost=null,longTimer=null,active=false;
+  const id=card.dataset.tid;
+  longTimer=setTimeout(()=>{
+    active=true;
+    if(navigator.vibrate)navigator.vibrate(15);
+    const r=card.getBoundingClientRect();
+    ghost=card.cloneNode(true);
+    ghost.classList.add("ghost");
+    ghost.style.width=r.width+"px";ghost.style.left=r.left+"px";ghost.style.top=r.top+"px";
+    ghost.style.pointerEvents="none"; // ghost가 elementFromPoint 막지 않게
+    ghost._dx=startX-r.left;ghost._dy=startY-r.top;
+    document.body.appendChild(ghost);
+    card.classList.add("dragging");
+  },250);
+  function move(ev){
+    if(!active){
+      if(Math.abs(ev.clientX-startX)>10||Math.abs(ev.clientY-startY)>10){clearTimeout(longTimer);cleanup();}
+      return;
+    }
+    ev.preventDefault();
+    ghost.style.left=(ev.clientX-ghost._dx)+"px";
+    ghost.style.top=(ev.clientY-ghost._dy)+"px";
+    document.querySelectorAll(".phase").forEach(c=>c.classList.remove("drop"));
+    document.querySelectorAll(".task").forEach(c=>c.classList.remove("over-top","over-bot"));
+    const el=document.elementFromPoint(ev.clientX,ev.clientY);
+    const overCard=el&&el.closest(".task");
+    if(overCard&&overCard!==card){
+      const r=overCard.getBoundingClientRect();
+      overCard.classList.add(ev.clientY<r.top+r.height/2?"over-top":"over-bot");
+    }else{
+      const ph=el&&el.closest(".phase");
+      if(ph)ph.classList.add("drop");
+    }
+  }
+  function up(ev){
+    clearTimeout(longTimer);
+    if(active){
+      const el=document.elementFromPoint(ev.clientX,ev.clientY);
+      const overCard=el&&el.closest(".task");
+      const ph=el&&el.closest(".phase");
+      if(overCard&&overCard!==card){
+        const targetId=overCard.dataset.tid;
+        const targetPhaseHead=ph&&ph.querySelector(".phase-head");
+        const targetPid=targetPhaseHead&&targetPhaseHead.dataset.ph;
+        const r=overCard.getBoundingClientRect();
+        const before=ev.clientY<r.top+r.height/2;
+        reorderTask(id,targetId,before,targetPid);
+      }else if(ph){
+        const head=ph.querySelector(".phase-head");
+        const pid=head&&head.dataset.ph;
+        if(pid){state["_move_"+id]=pid;state["_open_"+pid]=true;delete state["_order_"+id];save();renderAll();}
+      }
+    }
+    cleanup();
+  }
+  function cleanup(){
+    if(ghost){ghost.remove();ghost=null;}
+    card.classList.remove("dragging");
+    document.querySelectorAll(".phase").forEach(c=>c.classList.remove("drop"));
+    document.querySelectorAll(".task").forEach(c=>c.classList.remove("over-top","over-bot"));
+    window.removeEventListener("pointermove",move);
+    window.removeEventListener("pointerup",up);
+    window.removeEventListener("pointercancel",up);
+    active=false;
+  }
+  window.addEventListener("pointermove",move);
+  window.addEventListener("pointerup",up);
+  window.addEventListener("pointercancel",up);
+}
+function reorderTask(dragId,targetId,before,targetPid){
+  // 대상 단계의 현재 화면 순서를 읽어서 재배치
+  const phaseEl=document.querySelector('.phase-head[data-ph="'+targetPid+'"]');
+  if(!phaseEl)return;
+  const body=phaseEl.parentElement.querySelector(".phase-body");
+  let ids=[...body.querySelectorAll(".task")].map(t=>t.dataset.tid).filter(x=>x!==dragId);
+  const ti=ids.indexOf(targetId);
+  if(ti<0){ // 대상이 다른 단계이거나 못 찾으면 그냥 이동
+    state["_move_"+dragId]=targetPid;
+  }else{
+    ids.splice(before?ti:ti+1,0,dragId);
+    state["_move_"+dragId]=targetPid;
+  }
+  // 순서 저장
+  ids.forEach((id,i)=>{state["_order_"+id]=i;});
+  state["_open_"+targetPid]=true;
+  save();renderAll();
+}
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(confirm("모든 체크·이동 기록을 지울까요? (지출 기록은 유지)")){Object.keys(state).forEach(k=>delete state[k]);save();renderAll();}
+});
+function renderAll(){renderCover();renderNext();renderPhases();}
+renderAll();initLogForm();renderLog();
+// 과거 단계 묶음 펼치기/접기
+document.addEventListener("click",e=>{
+  const bar=e.target.closest("#pastBar");
+  if(bar){state["_pastOpen"]=!state["_pastOpen"];save();renderPhases();}
+});
+// 앱 열면 현재 진행 단계가 맨 위에 오도록
+setTimeout(()=>{const el=document.getElementById("activePhase");if(el)el.scrollIntoView({behavior:"auto",block:"start"});},200);
+</script>
+</body>
+</html>
